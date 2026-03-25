@@ -8,37 +8,61 @@ st.set_page_config(page_title="AABB 2026", layout="wide")
 
 st.markdown("""
     <style>
-        /* Ajuste do Título para não cortar */
-        .block-container { padding-top: 1rem; padding-left: 0.5rem; padding-right: 0.5rem; }
+        /* LIMPEZA DE INTERFACE */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        .stDeployButton {display:none;}
+        
+        /* ESPAÇAMENTO E TÍTULO */
+        .block-container { padding-top: 3.5rem; padding-left: 0.5rem; padding-right: 0.5rem; }
         
         .header-campeonato {
-            text-align: center; background-color: #0e1117; color: white;
+            text-align: center; background-color: #f0f2f6; color: #1a1c24;
             padding: 15px; border-radius: 10px; margin-bottom: 20px;
-            font-size: clamp(1.2rem, 5vw, 1.8rem); font-weight: bold;
-            border: 1px solid #31333F;
+            font-size: clamp(1.1rem, 5vw, 1.5rem); font-weight: bold;
+            border: 2px solid #004a99;
         }
 
-        /* Congelar primeira coluna da tabela */
-        [data-testid="stTable"] th:first-child, 
-        [data-testid="stTable"] td:first-child {
-            position: sticky; left: 0; background-color: #0e1117; z-index: 1;
+        /* TABELA FUNDO CLARO E TEXTO ESCURO */
+        [data-testid="stDataFrameDataLayer"] {
+            background-color: white;
         }
-        
-        /* Estilo dos Cards de Jogos */
-        .jogo-card { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; }
-        .time-box { width: 38%; font-size: 18px; font-weight: bold; }
-        .placar-box { width: 22%; text-align: center; background: #262730; border-radius: 5px; padding: 6px 0; font-weight: bold; font-size: 20px; color: #00ff00; }
-        .data-header { text-align: center; font-size: 14px; font-weight: bold; color: #ffffff; background-color: #31333F; padding: 4px 0; border-radius: 5px 5px 0 0; margin-top: 10px; }
-        .jogo-container-borda { border: 1px solid #31333F; border-radius: 5px; margin-bottom: 10px; }
+
+        /* CARDS DE JOGOS - ESTILO CLARO E LIMPO */
+        .jogo-container-borda {
+            border: 1px solid #ddd; border-radius: 10px; 
+            margin-bottom: 15px; background-color: #ffffff;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+        .data-header { 
+            text-align: center; font-size: 13px; background-color: #f8f9fa; 
+            padding: 5px; color: #666; border-bottom: 1px solid #eee;
+        }
+        .jogo-card { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 10px; color: #333;
+        }
+        .time-box { width: 38%; font-size: 16px; font-weight: bold; }
+        .placar-box { 
+            width: 20%; text-align: center; font-size: 22px; 
+            font-weight: bold; color: #ffffff; background: #28a745;
+            border-radius: 8px; padding: 5px 0;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Funções auxiliares (mesmas do anterior)
+# Função para converter imagem para Base64 (Obrigatória para funcionar no Streamlit Cloud)
 def get_base64_img(path):
     try:
-        if isinstance(path, str) and os.path.exists(path):
-            with open(path, "rb") as f: return base64.b64encode(f.read()).decode()
-    except: return None
+        if isinstance(path, str):
+            # Limpa espaços e barras extras do caminho
+            path = path.strip().lstrip('/')
+            if os.path.exists(path):
+                with open(path, "rb") as f:
+                    return base64.b64encode(f.read()).decode()
+    except Exception as e:
+        return None
     return None
 
 def carregar_csv(caminho):
@@ -52,7 +76,7 @@ try:
     df_times = carregar_csv('times.csv')
     df_jogadores = carregar_csv('jogadores.csv')
 except Exception as e:
-    st.error(f"Erro ao carregar dados: {e}")
+    st.error(f"Erro ao carregar arquivos: {e}")
     st.stop()
 
 st.markdown('<div class="header-campeonato">🏆 CAMPEONATO AABB 2026</div>', unsafe_allow_html=True)
@@ -82,23 +106,23 @@ with tab_class:
     df_rank = df_rank.sort_values(by=['P', 'V', 'SG', 'GP'], ascending=False).reset_index(drop=True)
     df_rank.index += 1
     
-    # Colorir G8
     def colorir_g8(row):
-        return ['background-color: rgba(0, 255, 0, 0.15)'] * len(row) if row.name <= 8 else [''] * len(row)
+        return ['background-color: #d4edda; color: #155724'] * len(row) if row.name <= 8 else ['background-color: white; color: black'] * len(row)
 
-    # Aplicar estilos e exibir
     st.dataframe(df_rank.style.apply(colorir_g8, axis=1), width="stretch")
 
 # --- ABA 2: JOGOS ---
 with tab_jogos:
     rodada_sel = st.selectbox("Rodada", sorted(df_jogos['RODADA'].unique()), label_visibility="collapsed")
     jogos_r = df_jogos[df_jogos['RODADA'] == rodada_sel]
+    
     for _, j in jogos_r.iterrows():
         g_m = int(j['GOLS_M']) if pd.notnull(j['GOLS_M']) else "-"
         g_v = int(j['GOLS_V']) if pd.notnull(j['GOLS_V']) else "-"
+        
         st.markdown(f"""
             <div class="jogo-container-borda">
-                <div class="data-header">{j['DATA']}</div>
+                <div class="data-header">📅 {j['DATA']}</div>
                 <div class="jogo-card">
                     <div class="time-box" style="text-align: right;">{j['TIME A']}</div>
                     <div class="placar-box">{g_m} x {g_v}</div>
@@ -111,29 +135,20 @@ with tab_jogos:
 with tab_times:
     time_sel = st.selectbox("Ver Time", df_times['NOME'].unique(), label_visibility="collapsed")
     
-    # Busca a linha do time selecionado
     dados_time = df_times[df_times['NOME'] == time_sel].iloc[0]
+    c1, c2 = st.columns(2)
     
-    col1, col2 = st.columns(2)
-    
-    # Tenta carregar o Escudo
-    logo_path = str(dados_time["LOGO"]).strip()
-    b64_logo = get_base64_img(logo_path)
+    # Exibe Escudo
+    b64_logo = get_base64_img(dados_time["LOGO"])
     if b64_logo:
-        col1.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b64_logo}" width="120"><br><b>Escudo</b></div>', unsafe_allow_html=True)
-    else:
-        col1.warning("Escudo não encontrado")
-
-    # Tenta carregar a Camisa
-    camisa_path = str(dados_time["CAMISA"]).strip()
-    b64_camisa = get_base64_img(camisa_path)
+        c1.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b64_logo}" width="120"><br><b>Escudo</b></div>', unsafe_allow_html=True)
+    
+    # Exibe Camisa
+    b64_camisa = get_base64_img(dados_time["CAMISA"])
     if b64_camisa:
-        col2.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b64_camisa}" width="120"><br><b>Camisa</b></div>', unsafe_allow_html=True)
-    else:
-        col2.warning("Camisa não encontrada")
+        c2.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b64_camisa}" width="120"><br><b>Camisa</b></div>', unsafe_allow_html=True)
 
     st.markdown("---")
-    st.subheader(f"Elenco: {time_sel}")
     elenco = df_jogadores[df_jogadores['NOME_TIME'] == time_sel].sort_values(by='NUMERO')
     for _, row in elenco.iterrows():
         st.write(f"**{int(row['NUMERO'])}** - {row['NOME_JOGADOR']}")
