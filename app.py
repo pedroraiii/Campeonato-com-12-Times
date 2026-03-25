@@ -8,7 +8,6 @@ st.set_page_config(page_title="AABB 2026", layout="wide")
 
 st.markdown("""
     <style>
-        /* Ajuste do Título: Desce o nome para não cortar no mobile */
         .block-container { padding-top: 5rem !important; }
         
         .header-campeonato {
@@ -17,18 +16,29 @@ st.markdown("""
             font-size: 1.5rem; font-weight: bold; border: 2px solid #31333F;
         }
 
-        /* Ajuste para o cabeçalho do índice (Classificação) não ficar preto */
-        .stDataFrame thead tr th:first-child {
-            background-color: white !important;
-            color: #666666 !important;
+        /* COLUNA FIXA - FORÇA TOTAL */
+        div[data-testid="stTable"] { overflow-x: auto !important; }
+        
+        /* Fixa a primeira coluna (Time) */
+        div[data-testid="stTable"] table thead tr th:first-child,
+        div[data-testid="stTable"] table tbody tr td:first-child {
+            position: sticky !important;
+            left: 0 !important;
+            background-color: #0e1117 !important;
+            z-index: 99 !important;
+            min-width: 100px !important;
+            box-shadow: 3px 0px 5px rgba(0,0,0,0.3);
         }
 
-        /* Estilo dos Cards de Jogos na Aba 2 */
-        .jogo-container-borda { border: 1px solid #31333F; border-radius: 5px; margin-bottom: 10px; overflow: hidden; }
-        .data-header { text-align: center; font-size: 13px; background-color: #31333F; padding: 5px; color: white; }
-        .jogo-card { display: flex; justify-content: space-around; align-items: center; padding: 10px; }
-        .time-box { width: 40%; font-size: 16px; font-weight: bold; text-align: center; }
-        .placar-box { width: 20%; text-align: center; font-size: 22px; color: #00ff00; font-weight: bold; background: #262730; border-radius: 5px; }
+        /* Container para imagens lado a lado no Mobile */
+        .img-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .img-box { text-align: center; width: 45%; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -120,16 +130,27 @@ with tab_times:
     time_sel = st.selectbox("Ver Time", df_times['NOME'].unique(), label_visibility="collapsed")
     d = df_times[df_times['NOME'] == time_sel].iloc[0]
     
-    c1, c2 = st.columns(2)
+    # Pegamos as imagens convertidas em Base64
     b_logo = get_base64_img(str(d["LOGO"]))
-    if b_logo: 
-        c1.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b_logo}" width="100"><br><b>Escudo</b></div>', unsafe_allow_html=True)
-    
     b_cam = get_base64_img(str(d["CAMISA"]))
-    if b_cam: 
-        c2.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b_cam}" width="100"><br><b>Camisa</b></div>', unsafe_allow_html=True)
+    
+    # Criamos o layout lado a lado via HTML puro (mais garantido que st.columns)
+    html_fotos = f"""
+    <div class="img-container">
+        <div class="img-box">
+            <img src="data:image/png;base64,{b_logo if b_logo else ''}" width="100">
+            <p><b>Escudo</b></p>
+        </div>
+        <div class="img-box">
+            <img src="data:image/png;base64,{b_cam if b_cam else ''}" width="100">
+            <p><b>Camisa</b></p>
+        </div>
+    </div>
+    """
+    st.markdown(html_fotos, unsafe_allow_html=True)
 
     st.markdown("---")
+    st.subheader(f"🏃 Elenco: {time_sel}")
     elenco = df_jogadores[df_jogadores['NOME_TIME'] == time_sel].sort_values(by='NUMERO')
     for _, row in elenco.iterrows():
         st.write(f"**{int(row['NUMERO'])}** - {row['NOME_JOGADOR']}")
