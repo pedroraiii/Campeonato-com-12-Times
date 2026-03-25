@@ -109,7 +109,7 @@ with tab_class:
         use_container_width=True,
         hide_index=True,
         column_config={
-            "Classificação": st.column_config.NumberColumn("Classificação", pinned=True, width="small"),
+            "Classificação": st.column_config.NumberColumn("Classificação", pinned=True, width="medium"),
             "Time": st.column_config.TextColumn("Time", pinned=True, width="medium")
         }
     )
