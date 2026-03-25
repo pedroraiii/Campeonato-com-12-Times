@@ -8,6 +8,7 @@ st.set_page_config(page_title="AABB 2026", layout="wide")
 
 st.markdown("""
     <style>
+        /* Desce o título e define fundo claro (para classificação e times) */
         .block-container { padding-top: 5rem !important; background-color: white; }
         
         .header-campeonato {
@@ -16,31 +17,31 @@ st.markdown("""
             font-size: 1.5rem; font-weight: bold; border: 1px solid #e2e8f0;
         }
 
-        /* --- FIXAÇÃO DAS COLUNAS NO MOBILE --- */
+        /* CLASSIFICAÇÃO: Habilita rolagem lateral */
         div[data-testid="stTable"] { overflow-x: auto !important; }
+        div[data-testid="stTable"] table { background-color: white !important; color: black !important; border-collapse: collapse; }
         
-        /* Fixa a 1ª Coluna (Classificação) */
-        div[data-testid="stTable"] table thead tr th:nth-child(1),
-        div[data-testid="stTable"] table tbody tr td:nth-child(1) {
-            position: sticky !important; left: 0 !important;
-            background-color: white !important; z-index: 11 !important;
-            min-width: 60px;
-        }
-
-        /* Fixa a 2ª Coluna (Time) */
+        /* FIXA APENAS A COLUNA TIME (2ª coluna) */
+        /* A primeira coluna (Classificação) corre livremente */
         div[data-testid="stTable"] table thead tr th:nth-child(2),
         div[data-testid="stTable"] table tbody tr td:nth-child(2) {
-            position: sticky !important; left: 60px !important;
-            background-color: white !important; z-index: 10 !important;
-            min-width: 140px; border-right: 2px solid #cbd5e1 !important;
+            position: sticky !important;
+            left: 0 !important;
+            background-color: white !important;
+            z-index: 99 !important;
+            min-width: 150px !important;
+            border-right: 2px solid #cbd5e1;
+            text-align: left !important;
         }
 
+        /* JOGOS: Layout de Cards ESCUROS */
         .jogo-container-borda { border: 1px solid #31333F; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background-color: #1a1c24; }
         .data-header { text-align: center; font-size: 14px !important; background-color: #31333F; padding: 6px; color: white !important; text-transform: uppercase; font-weight: bold; }
         .jogo-card { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; }
         .time-box { width: 38%; font-size: 16px; font-weight: bold; text-align: center; color: white !important; }
         .placar-box { width: 20%; text-align: center; font-size: 22px; color: #00ff00 !important; font-weight: 800; background: #0e1117; border-radius: 5px; padding: 5px 0; }
 
+        /* TIMES: Fotos Lado a Lado */
         .flex-fotos { display: flex; justify-content: space-around; align-items: center; width: 100%; margin: 15px 0; }
         .foto-item { text-align: center; width: 48%; }
         .foto-item p { color: #1e293b; font-weight: bold; margin-top: 5px; font-size: 14px; }
@@ -59,6 +60,7 @@ def carregar_csv(caminho):
     df.columns = [str(c).strip().upper() for c in df.columns]
     return df
 
+# --- 2. CARGA DE DADOS ---
 try:
     df_jogos = carregar_csv('jogos.csv')
     df_times = carregar_csv('times.csv')
@@ -101,7 +103,7 @@ with tab_class:
         return df.style.apply(lambda x: ['background-color: rgba(34, 197, 94, 0.2)' if x['Classificação'] <= 8 else '' for _ in x], axis=1)\
                        .set_properties(**{'text-align': 'center'})
 
-    # TROCAMOS st.dataframe por st.table para o CSS Sticky funcionar de verdade
+    # ALTERAÇÃO: Trocamos st.dataframe por st.table para o CSS Sticky funcionar de verdade
     st.table(estilar(df_rank))
 
 # --- ABA 2: JOGOS ---
