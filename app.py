@@ -16,7 +16,33 @@ st.markdown("""
             padding: 15px; border-radius: 10px; margin-bottom: 25px;
             font-size: 1.5rem; font-weight: bold; border: 1px solid #e2e8f0;
         }
+    /* --- COLE AQUI PARA FIXAR AS COLUNAS --- */
+        div[data-testid="stTable"] { 
+            overflow-x: auto !important; 
+        }
+        
+        /* Fixa a 1ª Coluna (Classificação) */
+        div[data-testid="stTable"] table thead tr th:nth-child(1),
+        div[data-testid="stTable"] table tbody tr td:nth-child(1) {
+            position: sticky !important;
+            left: 0 !important;
+            background-color: white !important;
+            z-index: 11 !important;
+            min-width: 60px;
+        }
 
+        /* Fixa a 2ª Coluna (Time) */
+        div[data-testid="stTable"] table thead tr th:nth-child(2),
+        div[data-testid="stTable"] table tbody tr td:nth-child(2) {
+            position: sticky !important;
+            left: 60px !important; 
+            background-color: white !important;
+            z-index: 10 !important;
+            min-width: 140px;
+            border-right: 2px solid #cbd5e1 !important;
+        }
+        /* --- FIM DO CÓDIGO DE FIXAÇÃO --- */
+            
         /* CLASSIFICAÇÃO: Tabela toda branca e centralizada, SEM cores de G8 */
         div[data-testid="stTable"] { overflow-x: auto !important; }
         div[data-testid="stTable"] table { background-color: white !important; color: black !important; border-collapse: collapse; }
