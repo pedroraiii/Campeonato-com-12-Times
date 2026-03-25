@@ -16,7 +16,7 @@ st.markdown("""
             font-size: 1.5rem; font-weight: bold; border: 1px solid #e2e8f0;
         }
 
-        /* --- CÓDIGO DE FIXAÇÃO PARA CELULAR --- */
+        /* --- FIXAÇÃO DAS COLUNAS NO MOBILE --- */
         div[data-testid="stTable"] { overflow-x: auto !important; }
         
         /* Fixa a 1ª Coluna (Classificação) */
@@ -71,6 +71,7 @@ st.markdown('<div class="header-campeonato">🏆 CAMPEONATO AABB 2026</div>', un
 
 tab_class, tab_jogos, tab_times = st.tabs(["📊 Classificação", "📅 Jogos", "🛡️ Times"])
 
+# --- ABA 1: CLASSIFICAÇÃO ---
 with tab_class:
     stats = {t: {"P": 0, "J": 0, "V": 0, "E": 0, "D": 0, "GP": 0, "GC": 0, "SG": 0} for t in df_times['NOME'].unique()}
     jogos_ok = df_jogos.dropna(subset=['GOLS_M', 'GOLS_V'])
@@ -100,9 +101,10 @@ with tab_class:
         return df.style.apply(lambda x: ['background-color: rgba(34, 197, 94, 0.2)' if x['Classificação'] <= 8 else '' for _ in x], axis=1)\
                        .set_properties(**{'text-align': 'center'})
 
-    # MUDANÇA ESSENCIAL: st.table no lugar de st.dataframe
+    # TROCAMOS st.dataframe por st.table para o CSS Sticky funcionar de verdade
     st.table(estilar(df_rank))
 
+# --- ABA 2: JOGOS ---
 with tab_jogos:
     rodada_sel = st.selectbox("Rodada", sorted(df_jogos['RODADA'].unique()), label_visibility="collapsed")
     jogos_r = df_jogos[df_jogos['RODADA'] == rodada_sel]
@@ -120,6 +122,7 @@ with tab_jogos:
             </div>
         """, unsafe_allow_html=True)
 
+# --- ABA 3: TIMES ---
 with tab_times:
     time_sel = st.selectbox("Ver Time", df_times['NOME'].unique(), label_visibility="collapsed")
     d = df_times[df_times['NOME'] == time_sel].iloc[0]
