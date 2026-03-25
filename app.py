@@ -8,33 +8,42 @@ st.set_page_config(page_title="AABB 2026", layout="wide")
 
 st.markdown("""
     <style>
-        /* Espaçamento do topo para o título não cortar */
-        .block-container { padding-top: 4rem !important; }
+        /* Desce o título e define fundo claro (para classificação e times) */
+        .block-container { padding-top: 5rem !important; background-color: white; }
         
         .header-campeonato {
-            text-align: center; background-color: #0e1117; color: white;
+            text-align: center; background-color: #f8fafc; color: #1e293b;
             padding: 15px; border-radius: 10px; margin-bottom: 25px;
-            font-size: 1.5rem; font-weight: bold; border: 2px solid #31333F;
+            font-size: 1.5rem; font-weight: bold; border: 1px solid #e2e8f0;
         }
 
-        /* COLUNA FIXA NA CLASSIFICAÇÃO */
+        /* CLASSIFICAÇÃO: Tabela toda branca e centralizada, SEM cores de G8 */
         div[data-testid="stTable"] { overflow-x: auto !important; }
+        div[data-testid="stTable"] table { background-color: white !important; color: black !important; border-collapse: collapse; }
+        
+        /* Fixar a primeira coluna (Classificação) com fundo branco */
         div[data-testid="stTable"] table thead tr th:first-child,
         div[data-testid="stTable"] table tbody tr td:first-child {
             position: sticky !important;
             left: 0 !important;
-            background-color: #0e1117 !important;
+            background-color: white !important; /* Fundo branco garantido */
             z-index: 99 !important;
             min-width: 100px !important;
-            box-shadow: 2px 0px 5px rgba(0,0,0,0.5);
+            border-right: 1px solid #cbd5e1;
+            text-align: center !important; /* Número centralizado */
         }
 
-        /* ESTILO DOS CARDS DE JOGOS (RESTAURADO) */
+        /* JOGOS: Layout de Cards ESCUROS (Restaurado conforme pedido) */
         .jogo-container-borda { border: 1px solid #31333F; border-radius: 8px; margin-bottom: 12px; overflow: hidden; background-color: #1a1c24; }
-        .data-header { text-align: center; font-size: 12px; background-color: #31333F; padding: 4px; color: #aaa; text-transform: uppercase; }
+        .data-header { text-align: center; font-size: 14px !important; background-color: #31333F; padding: 6px; color: white !important; text-transform: uppercase; font-weight: bold; }
         .jogo-card { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; }
-        .time-box { width: 38%; font-size: 16px; font-weight: bold; text-align: center; color: white; }
-        .placar-box { width: 20%; text-align: center; font-size: 22px; color: #00ff00; font-weight: bold; background: #0e1117; border-radius: 5px; padding: 5px 0; }
+        .time-box { width: 38%; font-size: 16px; font-weight: bold; text-align: center; color: white !important; }
+        .placar-box { width: 20%; text-align: center; font-size: 22px; color: #00ff00 !important; font-weight: 800; background: #0e1117; border-radius: 5px; padding: 5px 0; }
+
+        /* TIMES: Fotos Lado a Lado no Mobile */
+        .flex-fotos { display: flex; justify-content: space-around; align-items: center; width: 100%; margin: 15px 0; }
+        .foto-item { text-align: center; width: 48%; }
+        .foto-item p { color: #1e293b; font-weight: bold; margin-top: 5px; font-size: 14px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -56,18 +65,17 @@ try:
     df_times = carregar_csv('times.csv')
     df_jogadores = carregar_csv('jogadores.csv')
 except Exception as e:
-    st.error(f"Erro: {e}")
+    st.error(f"Erro ao carregar arquivos: {e}")
     st.stop()
 
 st.markdown('<div class="header-campeonato">🏆 CAMPEONATO AABB 2026</div>', unsafe_allow_html=True)
 
 tab_class, tab_jogos, tab_times = st.tabs(["📊 Classificação", "📅 Jogos", "🛡️ Times"])
 
-# --- ABA 1: CLASSIFICAÇÃO ---
+# --- ABA 1: CLASSIFICAÇÃO (Ajuste Final e Totalmente Branca) ---
 with tab_class:
     stats = {t: {"P": 0, "J": 0, "V": 0, "E": 0, "D": 0, "GP": 0, "GC": 0, "SG": 0} for t in df_times['NOME'].unique()}
     jogos_ok = df_jogos.dropna(subset=['GOLS_M', 'GOLS_V'])
-    
     for _, j in jogos_ok.iterrows():
         m, v = str(j['TIME A']).strip(), str(j['TIME B']).strip()
         if m in stats and v in stats:
@@ -80,17 +88,21 @@ with tab_class:
             else: stats[m]["P"]+=1; stats[v]["P"]+=1; stats[m]["E"]+=1; stats[v]["E"]+=1
 
     for t in stats: stats[t]["SG"] = stats[t]["GP"] - stats[t]["GC"]
+    df_rank = pd.read_csv('times.csv') # Criamos o DataFrame base
     df_rank = pd.DataFrame.from_dict(stats, orient='index').reset_index()
     df_rank.columns = ['Time', 'P', 'J', 'V', 'E', 'D', 'GP', 'GC', 'SG']
     df_rank = df_rank.sort_values(by=['P', 'V', 'SG', 'GP'], ascending=False).reset_index(drop=True)
     df_rank.index += 1
     
-    def colorir_g8(row):
-        return ['background-color: rgba(0, 255, 0, 0.1)'] * len(row) if row.name <= 8 else [''] * len(row)
+    # Damos o nome "Classificação" para a coluna de números automática do Pandas
+    df_rank.index.name = 'Classificação'
+    
+    # EXIBIÇÃO: Note que não colorimos mais o G8, e forçamos centralização
+    st.table(
+        df_rank.style.set_properties(**{'text-align': 'center'}) 
+    )
 
-    st.table(df_rank.style.apply(colorir_g8, axis=1))
-
-# --- ABA 2: JOGOS (RESTAURADO) ---
+# --- ABA 2: JOGOS (RESTAURADO PARA DESIGN ESCURO) ---
 with tab_jogos:
     rodada_sel = st.selectbox("Rodada", sorted(df_jogos['RODADA'].unique()), label_visibility="collapsed")
     jogos_r = df_jogos[df_jogos['RODADA'] == rodada_sel]
@@ -113,18 +125,24 @@ with tab_times:
     time_sel = st.selectbox("Ver Time", df_times['NOME'].unique(), label_visibility="collapsed")
     d = df_times[df_times['NOME'] == time_sel].iloc[0]
     
-    # Para forçar lado a lado no mobile sem quebrar o resto, usamos colunas pequenas
-    c1, c2 = st.columns(2)
-    
     b_logo = get_base64_img(str(d["LOGO"]))
-    if b_logo: 
-        c1.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b_logo}" width="100"><br><b>Escudo</b></div>', unsafe_allow_html=True)
-    
     b_cam = get_base64_img(str(d["CAMISA"]))
-    if b_cam: 
-        c2.markdown(f'<div style="text-align:center;"><img src="data:image/png;base64,{b_cam}" width="100"><br><b>Camisa</b></div>', unsafe_allow_html=True)
+    
+    # HTML Lado a Lado (Garantido para Mobile)
+    st.markdown(f"""
+    <div class="flex-fotos">
+        <div class="foto-item">
+            <img src="data:image/png;base64,{b_logo if b_logo else ''}" width="100">
+            <p>Escudo</p>
+        </div>
+        <div class="foto-item">
+            <img src="data:image/png;base64,{b_cam if b_cam else ''}" width="100">
+            <p>Camisa</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("---")
+    st.markdown("<hr style='border: 0.5px solid #e2e8f0;'>", unsafe_allow_html=True)
     elenco = df_jogadores[df_jogadores['NOME_TIME'] == time_sel].sort_values(by='NUMERO')
     for _, row in elenco.iterrows():
         st.write(f"**{int(row['NUMERO'])}** - {row['NOME_JOGADOR']}")
