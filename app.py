@@ -92,25 +92,25 @@ with tab_class:
     df_rank = pd.DataFrame.from_dict(stats, orient='index').reset_index()
     df_rank.columns = ['Time', 'P', 'J', 'V', 'E', 'D', 'GP', 'GC', 'SG']
     df_rank = df_rank.sort_values(by=['P', 'V', 'SG', 'GP'], ascending=False).reset_index(drop=True)
-    
-    # Define a numeração e nomeia a coluna
     df_rank.index += 1
-    df_rank = df_rank.reset_index().rename(columns={'index': 'Classificação'})
     
-    # Estilização: Cores e Centralização
-    def estilar_tabela(val):
-        # Aplicamos o verde no G8 baseado no índice da linha
-        return df_rank.style.apply(lambda x: ['background-color: rgba(34, 197, 94, 0.2)' if x['Classificação'] <= 8 else '' for _ in x], axis=1)\
-                            .set_properties(**{'text-align': 'center'})
+    # Organiza as colunas: Classificação primeiro, Time segundo
+    df_rank = df_rank.reset_index().rename(columns={'index': 'Classificação'})
+    colunas_ordem = ['Classificação', 'Time', 'P', 'J', 'V', 'E', 'D', 'GP', 'GC', 'SG']
+    df_rank = df_rank[colunas_ordem]
 
-    # Exibição com st.dataframe para permitir "column_config" (travar coluna)
+    # Estilização: G8 Verde e Centralização
+    def estilar(df):
+        return df.style.apply(lambda x: ['background-color: rgba(34, 197, 94, 0.2)' if x['Classificação'] <= 8 else '' for _ in x], axis=1)\
+                       .set_properties(**{'text-align': 'center'})
+
     st.dataframe(
-        estilar_tabela(df_rank),
-        width="stretch",
+        estilar(df_rank),
+        use_container_width=True,
         hide_index=True,
         column_config={
-            "Time": st.column_config.TextColumn("Time", pinned=True), # TRAVA A COLUNA TIME
-            "Classificação": st.column_config.NumberColumn("Classificação", format="%d")
+            "Classificação": st.column_config.NumberColumn("Classificação", pinned=True, width="small"),
+            "Time": st.column_config.TextColumn("Time", pinned=True, width="medium")
         }
     )
 
