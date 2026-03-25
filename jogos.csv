@@ -1,0 +1,67 @@
+﻿DATA;TIME A;Gols_M;x;Gols_V;TIME B;Rodada
+01/04/2026;Atlético Mineiro;5;x;0;Vasco da Gama;1
+01/04/2026;Botafogo;1;x;2;São Paulo;1
+01/04/2026;Corinthians;1;x;1;Santos;1
+01/04/2026;Cruzeiro;0;x;3;Palmeiras;1
+01/04/2026;Flamengo;1;x;2;Internacional;1
+01/04/2026;Fluminense;0;x;0;Grêmio;1
+02/04/2026;Vasco da Gama;;x;;Fluminense;2
+02/04/2026;Grêmio;;x;;Flamengo;2
+02/04/2026;Internacional;;x;;Cruzeiro;2
+02/04/2026;Palmeiras;;x;;Corinthians;2
+02/04/2026;Santos;;x;;Botafogo;2
+02/04/2026;São Paulo;;x;;Atlético Mineiro;2
+03/04/2026;Atlético Mineiro;;x;;Santos;3
+03/04/2026;Botafogo;;x;;Palmeiras;3
+03/04/2026;Corinthians;;x;;Internacional;3
+03/04/2026;Cruzeiro;;x;;Grêmio;3
+03/04/2026;Flamengo;;x;;Fluminense;3
+03/04/2026;São Paulo;;x;;Vasco da Gama;3
+04/04/2026;Vasco da Gama;;x;;Flamengo;4
+04/04/2026;Fluminense;;x;;Cruzeiro;4
+04/04/2026;Grêmio;;x;;Corinthians;4
+04/04/2026;Internacional;;x;;Botafogo;4
+04/04/2026;Palmeiras;;x;;Atlético Mineiro;4
+04/04/2026;Santos;;x;;São Paulo;4
+05/04/2026;Atlético Mineiro;;x;;Internacional;5
+05/04/2026;Botafogo;;x;;Grêmio;5
+05/04/2026;Corinthians;;x;;Fluminense;5
+05/04/2026;Cruzeiro;;x;;Flamengo;5
+05/04/2026;Santos;;x;;Vasco da Gama;5
+05/04/2026;São Paulo;;x;;Palmeiras;5
+06/04/2026;Vasco da Gama;;x;;Cruzeiro;6
+06/04/2026;Flamengo;;x;;Corinthians;6
+06/04/2026;Fluminense;;x;;Botafogo;6
+06/04/2026;Grêmio;;x;;Atlético Mineiro;6
+06/04/2026;Internacional;;x;;São Paulo;6
+06/04/2026;Palmeiras;;x;;Santos;6
+07/04/2026;Atlético Mineiro;;x;;Fluminense;7
+07/04/2026;Botafogo;;x;;Flamengo;7
+07/04/2026;Corinthians;;x;;Cruzeiro;7
+07/04/2026;Palmeiras;;x;;Vasco da Gama;7
+07/04/2026;Santos;;x;;Internacional;7
+07/04/2026;São Paulo;;x;;Grêmio;7
+08/04/2026;Vasco da Gama;;x;;Corinthians;8
+08/04/2026;Cruzeiro;;x;;Botafogo;8
+08/04/2026;Flamengo;;x;;Atlético Mineiro;8
+08/04/2026;Fluminense;;x;;São Paulo;8
+08/04/2026;Grêmio;;x;;Santos;8
+08/04/2026;Internacional;;x;;Palmeiras;8
+09/04/2026;Atlético Mineiro;;x;;Botafogo;9
+09/04/2026;Internacional;;x;;Vasco da Gama;9
+09/04/2026;Palmeiras;;x;;Grêmio;9
+09/04/2026;Santos;;x;;Fluminense;9
+09/04/2026;São Paulo;;x;;Flamengo;9
+09/04/2026;Corinthians;;x;;Cruzeiro;9
+10/04/2026;Vasco da Gama;;x;;Botafogo;10
+10/04/2026;Corinthians;;x;;Atlético Mineiro;10
+10/04/2026;Cruzeiro;;x;;São Paulo;10
+10/04/2026;Flamengo;;x;;Santos;10
+10/04/2026;Fluminense;;x;;Palmeiras;10
+10/04/2026;Grêmio;;x;;Internacional;10
+11/04/2026;Atlético Mineiro;;x;;Cruzeiro;11
+11/04/2026;Botafogo;;x;;Corinthians;11
+11/04/2026;Grêmio;;x;;Vasco da Gama;11
+11/04/2026;Internacional;;x;;Fluminense;11
+11/04/2026;Palmeiras;;x;;Flamengo;11
+11/04/2026;Santos;;x;;São Paulo;11
