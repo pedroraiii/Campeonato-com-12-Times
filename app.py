@@ -72,7 +72,7 @@ st.markdown('<div class="header-campeonato">🏆 CAMPEONATO AABB 2026</div>', un
 
 tab_class, tab_jogos, tab_times = st.tabs(["📊 Classificação", "📅 Jogos", "🛡️ Times"])
 
-# --- ABA 1: CLASSIFICAÇÃO (Ajuste Final e Totalmente Branca) ---
+# --- ABA 1: CLASSIFICAÇÃO (Final: Centralizada, G8 Verde e Coluna Fixa) ---
 with tab_class:
     stats = {t: {"P": 0, "J": 0, "V": 0, "E": 0, "D": 0, "GP": 0, "GC": 0, "SG": 0} for t in df_times['NOME'].unique()}
     jogos_ok = df_jogos.dropna(subset=['GOLS_M', 'GOLS_V'])
@@ -88,18 +88,30 @@ with tab_class:
             else: stats[m]["P"]+=1; stats[v]["P"]+=1; stats[m]["E"]+=1; stats[v]["E"]+=1
 
     for t in stats: stats[t]["SG"] = stats[t]["GP"] - stats[t]["GC"]
-    df_rank = pd.read_csv('times.csv') # Criamos o DataFrame base
+    
     df_rank = pd.DataFrame.from_dict(stats, orient='index').reset_index()
     df_rank.columns = ['Time', 'P', 'J', 'V', 'E', 'D', 'GP', 'GC', 'SG']
     df_rank = df_rank.sort_values(by=['P', 'V', 'SG', 'GP'], ascending=False).reset_index(drop=True)
+    
+    # Define a numeração e nomeia a coluna
     df_rank.index += 1
+    df_rank = df_rank.reset_index().rename(columns={'index': 'Classificação'})
     
-    # Damos o nome "Classificação" para a coluna de números automática do Pandas
-    df_rank.index.name = 'Classificação'
-    
-    # EXIBIÇÃO: Note que não colorimos mais o G8, e forçamos centralização
-    st.table(
-        df_rank.style.set_properties(**{'text-align': 'center'}) 
+    # Estilização: Cores e Centralização
+    def estilar_tabela(val):
+        # Aplicamos o verde no G8 baseado no índice da linha
+        return df_rank.style.apply(lambda x: ['background-color: rgba(34, 197, 94, 0.2)' if x['Classificação'] <= 8 else '' for _ in x], axis=1)\
+                            .set_properties(**{'text-align': 'center'})
+
+    # Exibição com st.dataframe para permitir "column_config" (travar coluna)
+    st.dataframe(
+        estilar_tabela(df_rank),
+        width="stretch",
+        hide_index=True,
+        column_config={
+            "Time": st.column_config.TextColumn("Time", pinned=True), # TRAVA A COLUNA TIME
+            "Classificação": st.column_config.NumberColumn("Classificação", format="%d")
+        }
     )
 
 # --- ABA 2: JOGOS (RESTAURADO PARA DESIGN ESCURO) ---
